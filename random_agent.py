@@ -48,7 +48,7 @@ def get_valid_moves(cards):
 
     return moves
 
-def get_move(cards, player1, player2):
+def get_move(cards, player1, player2, companion_cards, choose_companion):
     '''
     This function gets the move of the player.
 
@@ -56,10 +56,53 @@ def get_move(cards, player1, player2):
         cards (list): list of Card objects
         player1 (Player): the player
         player2 (Player): the opponent
-    
+        companion_cards (dict): dictionary of companion cards
+        choose_companion (bool): flag to choose a companion card
+
     Returns:
-        move (int): the move of the player
+        move (int/list): the move of the player
     '''
+
+    if choose_companion:
+        # Choose a random companion card if available
+        if companion_cards:
+            selected_companion = random.choice(list(companion_cards.keys())) # Randomly select a companion card
+            move = [selected_companion] # Add the companion card to the move list
+            choices = companion_cards[selected_companion]['Choice'] # Get the number of choices required by the companion card
+            
+            # For each choice required by the companion card
+            for _ in range(choices):
+                if choices == 1:  # For cards like Jon Snow
+                    move.append(random.choice(get_valid_moves(cards)))
+                
+                elif choices == 2:  # For cards like Ramsay
+                    valid_moves = get_valid_moves(cards)
+
+                    if len(valid_moves) >= 2:
+                        move.extend(random.sample(valid_moves, 2))
+                    
+                    else:
+                        move.extend(valid_moves)  # If not enough moves, just use what's available
+                    
+                elif choices == 3:  # Special case for Jaqen with an additional companion card selection
+                    valid_moves = get_valid_moves(cards)
+
+                    if len(valid_moves) >= 2 and len(companion_cards) > 0:
+                        move.extend(random.sample(valid_moves, 2))
+                        move.append([random.choice(list(companion_cards.keys()))])
+                    
+                    else:
+                        # If there aren't enough moves or companion cards, just return what's possible
+                        move.extend(valid_moves)
+                        move.append([random.choice(list(companion_cards.keys()))] if companion_cards else [])
+            
+            return move
+        
+        else:
+            # If no companion cards are left, just return an empty list to signify no action
+            return []
     
-    moves = get_valid_moves(cards)
-    return random.choice(moves)
+    else:
+        # Normal move, choose from valid moves
+        moves = get_valid_moves(cards)
+        return random.choice(moves) if moves else None
