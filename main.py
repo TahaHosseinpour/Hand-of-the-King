@@ -850,6 +850,9 @@ def main(args):
 
                         if not companion_selecting_condition:
                             selectable_cards.remove(selected) # Remove the selected card from the list
+                        
+                        else:
+                            selected = selected[0] # Get the selected card
 
                         move.append(selected) # Add the selected card to the list
 
