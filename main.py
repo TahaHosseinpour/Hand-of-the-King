@@ -8,9 +8,10 @@ from os.path import abspath, join, dirname
 import sys
 import json
 import copy
+from pygraphics import *
+from classes import Card, Player
 
 # Add the utils folder to the path
-sys.path.append(join(dirname(abspath(__file__)), "utils"))
 
 # Import the utils
 import pygraphics

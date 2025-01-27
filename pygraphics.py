@@ -2,13 +2,15 @@ import pygame
 import json
 import time
 from moviepy.editor import ImageSequenceClip
+
 from numpy import rot90, flipud
 from os import pardir, environ
 from os.path import abspath, join, dirname
 
 # Get the path of the assets and videos folder
-assets_path = join((abspath(join(dirname(abspath(__file__)), pardir))), "assets")
-videos_path = join((abspath(join(dirname(abspath(__file__)), pardir))), "videos")
+assets_path = join(dirname(abspath(__file__)), "assets")
+videos_path = join(dirname(abspath(__file__)), "videos")
+
 
 ROWS = 6 # Number of rows in the board
 COLS = 6 # Number of columns in the board
