@@ -7,8 +7,8 @@ from copy import deepcopy
 # python main_tester_new.py --player1 agent3 --player2 random_agent
 
 COMPANION_NOISE_RANGE = 1
-LOCATION_NOISE_RANGE = 10
-REPETITIONS_AT_EACH_TEMPERATURE = 10
+LOCATION_NOISE_RANGE = 3
+REPETITIONS_AT_EACH_TEMPERATURE = 3
 
 #---------(Prerequisite Functions)------------------------------------------------------------------------------------------------------------------------------
 
@@ -336,7 +336,7 @@ def generate_random_move_and_simulate(cards, player1, player2, depth):
 
     return neighbor, new_cards, new_player1, new_player2
 
-def generate_neighbor_move_and_simulate(cards, player1, player2, current_move, current_possibility, noise_range):
+def generate_neighbor_move_and_simulate(cards, player1, player2, current_move, current_possibility):
     """
     Generates a neighboring move for simulated annealing when choose_companion==false
     """
@@ -358,7 +358,7 @@ def generate_neighbor_move_and_simulate(cards, player1, player2, current_move, c
 
             if random.random() < current_possibility[i]:
                 move_index = valid_moves.index(current_move[i])
-                random_noise = random.randint( -int(noise_range), int(noise_range) )
+                random_noise = random.randint( -LOCATION_NOISE_RANGE, LOCATION_NOISE_RANGE )
                 new_move_index = max(0, min(move_index + random_noise, len(valid_moves)-1))
                 new_move = valid_moves[new_move_index]
 
@@ -397,7 +397,7 @@ def simulated_annealing_normal(cards, player1, player2, depth):
     # simulated_cards, simulated_player1, simulated_player2 = simulate_move(cards, current_move, player1, player2)
     # current_score = evaluate_state(simulated_player1, simulated_player2)
 
-    current_move, _, simulated_player1, simulated_player2 = generate_random_move_and_simulate(cards, player1, player2, depth)
+    current_move, simulated_cards, simulated_player1, simulated_player2 = generate_random_move_and_simulate(cards, player1, player2, depth)
     current_score = evaluate_state(simulated_player1, simulated_player2)
 
     # print("current_move = ",current_move, current_score, current_move[0] in get_valid_moves(cards))
@@ -412,8 +412,7 @@ def simulated_annealing_normal(cards, player1, player2, depth):
             # if new_simulated_cards == None:
             #     continue
 
-            noise_range = LOCATION_NOISE_RANGE * (temperature/100)
-            neighbor, _, new_simulated_player1, new_simulated_player2 = generate_neighbor_move_and_simulate(cards, player1, player2, current_move, current_possibility, noise_range)
+            neighbor, new_simulated_cards, new_simulated_player1, new_simulated_player2 = generate_neighbor_move_and_simulate(cards, player1, player2, current_move, current_possibility)
             new_score = evaluate_state(new_simulated_player1, new_simulated_player2)
 
             # print("at temperature = ",temperature, " neighbor = ",neighbor, new_score, neighbor[0] in get_valid_moves(cards))
@@ -425,8 +424,8 @@ def simulated_annealing_normal(cards, player1, player2, depth):
         temperature *= cooling_rate
 
         # reducing the likelihood of applying noise over time (exploration to exploitation)
-        # possibility_min = 0.1 + 0.4 * (temperature/100)
-        # current_possibility = [(possibility_min+i*(0.4/(depth-1))) for i in range(depth)] if depth > 1 else [0.9]
+        possibility_min = 0.1 + 0.4 * (temperature/100)
+        current_possibility = [(possibility_min+i*(0.4/(depth-1))) for i in range(depth)] if depth > 1 else [0.9]
 
     # print("best = ",current_move, current_score)
     return current_move
@@ -609,4 +608,4 @@ def get_move(cards, player1, player2, companion_cards, choose_companion):
         else:
             return []
     else:
-        return simulated_annealing_normal(cards, player1, player2, depth=5)[0]
+        return simulated_annealing_normal(cards, player1, player2, depth=3)[0]
