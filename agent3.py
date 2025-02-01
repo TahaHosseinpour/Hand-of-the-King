@@ -7,8 +7,8 @@ from copy import deepcopy
 # python main_tester_new.py --player1 agent3 --player2 random_agent
 
 COMPANION_NOISE_RANGE = 1
-LOCATION_NOISE_RANGE = 3
-REPETITIONS_AT_EACH_TEMPERATURE = 3
+LOCATION_NOISE_RANGE = 10
+REPETITIONS_AT_EACH_TEMPERATURE = 5
 
 #---------(Prerequisite Functions)------------------------------------------------------------------------------------------------------------------------------
 
@@ -608,4 +608,4 @@ def get_move(cards, player1, player2, companion_cards, choose_companion):
         else:
             return []
     else:
-        return simulated_annealing_normal(cards, player1, player2, depth=3)[0]
+        return simulated_annealing_normal(cards, player1, player2, depth=5)[0]
